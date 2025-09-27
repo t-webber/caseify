@@ -32,7 +32,7 @@ AndPascalCase" | caseify --camel
 # Output:
 # someText
 # someSnakeCase
-# AndPascalCase
+# andPascalCase
 
 # Process multiple lines
 cat file.txt | caseify --pascal
