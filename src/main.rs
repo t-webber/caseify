@@ -51,10 +51,10 @@ struct Args {
     #[arg(short, long)]
     camel: bool,
     /// `This Is Capitalised Case`
-    #[arg(short = 'a', long)]
+    #[arg(short = 'a', long, visible_alias = "cap")]
     capitalised: bool,
     /// `THIS_IS_CONSTANT_CASE` (or `UPPER_CASE`)
-    #[arg(short = 'o', long)]
+    #[arg(short = 'o', long, visible_alias = "const")]
     constant: bool,
     /// `this.is.dot.case`
     #[arg(short, long)]
