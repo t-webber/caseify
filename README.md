@@ -43,7 +43,7 @@ caseify --help
 
 Help message:
 
-```bash
+```txt
 Usage: caseify [OPTIONS] [VALUE]
 
 Arguments:
