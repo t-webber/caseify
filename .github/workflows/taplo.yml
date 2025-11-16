@@ -1,0 +1,17 @@
+name: Taplo
+
+on: [pull_request, push]
+
+jobs:
+    taplo:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Install taplo
+              uses: uncenter/setup-taplo@v1
+
+            - name: Chech formatting
+              run: taplo format --check
