@@ -16,7 +16,6 @@ categories = [
 ]
 
 [dependencies]
-clap = { version = "4.5.42", features = ["derive"] }
 
 [lib]
 name = "caseify"

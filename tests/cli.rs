@@ -1,11 +1,11 @@
-use std::io::{self, Write};
+use std::io::Write;
 use std::process::{Command, Stdio};
 use std::str;
 
 #[test]
 fn stdin() {
     let mut child = Command::new("./target/debug/caseify")
-        .arg("--camel")
+        .arg("Camel")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
@@ -23,8 +23,8 @@ fn stdin() {
 
 #[test]
 fn no_stdin() {
-    let mut child = Command::new("./target/debug/caseify")
-        .args(["--camel", "Hello, World!"])
+    let child = Command::new("./target/debug/caseify")
+        .args(["Camel", "Hello, World!"])
         .stdout(Stdio::piped())
         .spawn()
         .expect("Failed to start process");
