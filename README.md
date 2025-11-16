@@ -2,64 +2,11 @@
 
 A fast and simple Rust library and CLI tool for converting strings between different case conventions.
 
-> This is a new crate, open to comments and improvements!
-
 ## Features
 
 - **Library**: Trait-based API for easy string case conversion
 - **CLI Tool**: Command-line utility for batch processing and pipes
 - **Multiple Cases**: Support for 8 different case conventions
-
-## CLI Usage
-
-Install it with:
-
-```bash
-cargo install caseify
-```
-
-Then use it as such:
-
-```bash
-# Convert a single string
-caseify --snake "SomeVariableName"
-# Output: some_variable_name
-
-# Use with pipes
-echo "some text
-some_snake_case
-AndPascalCase" | caseify --camel
-# Output:
-# someText
-# someSnakeCase
-# andPascalCase
-
-# Process multiple lines
-cat file.txt | caseify --pascal
-
-# Available options
-caseify --help
-```
-
-Help message:
-
-```txt
-Usage: caseify [OPTIONS] [VALUE]
-
-Arguments:
-  [VALUE]  If no value is provided, reads from stdin (e.g. for pipes)
-
-Options:
-  -c, --camel        `thisIsCamelCase`
-  -a, --capitalised  `This Is Capitalised Case`
-  -o, --constant     `THIS_IS_CONSTANT_CASE` (or `UPPER_CASE`)
-  -d, --dot          `this.is.dot.case`
-  -k, --kebab        `this-is-kebab-case` (or `dashed-case`)
-  -p, --pascal       `ThisIsPascalCase`
-  -e, --sentence     `This is sentence case`
-  -s, --snake        `this_is_snake_case`
-  -h, --help         Print help
-```
 
 ## Library Usage
 
@@ -93,4 +40,44 @@ use caseify::Caseify;
 assert_eq!("XMLHttpRequest".to_snake_case(), "xml_http_request");
 assert_eq!("linux    _Kernel".to_camel_case(), "linuxKernel");
 assert_eq!("some--weird___input".to_pascal_case(), "SomeWeirdInput");
+```
+
+You can also use the `Case` enum:
+
+```rust
+use caseify::Case;
+
+assert_eq!(Case::Pascal.caseify("hello, world!"), "HelloWorld");
+```
+
+
+## CLI Usage
+
+Install it with:
+
+```bash
+cargo install caseify
+```
+
+Then use it as such:
+
+```bash
+# Convert a single string
+caseify --snake "SomeVariableName"
+# Output: some_variable_name
+
+# Use with pipes
+echo "some text
+some_snake_case
+AndPascalCase" | caseify --camel
+# Output:
+# someText
+# someSnakeCase
+# andPascalCase
+
+# Process multiple lines
+cat file.txt | caseify --pascal
+
+# Available options
+caseify --help
 ```

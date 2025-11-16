@@ -58,6 +58,45 @@ impl From<char> for Type {
     }
 }
 
+/// Supported cases
+#[derive(Copy, Clone, Debug)]
+#[non_exhaustive]
+pub enum Case {
+    /// `camelCase`
+    Camel,
+    /// `Capitalised Case`
+    Capitalised,
+    /// `CONSTANT_CASE`
+    Constant,
+    /// `dot.case`
+    Dot,
+    /// `kebab-case`
+    Kebab,
+    /// `PascalCase`
+    Pascal,
+    /// `Sentence case`
+    Sentence,
+    /// `snake_case`
+    Snake,
+}
+
+impl Case {
+    /// Transforms the input in the given case and returns it.
+    #[must_use]
+    pub fn caseify(self, input: &str) -> String {
+        match self {
+            Self::Camel => input.to_camel_case(),
+            Self::Capitalised => input.to_capitalised_case(),
+            Self::Constant => input.to_constant_case(),
+            Self::Dot => input.to_dot_case(),
+            Self::Kebab => input.to_kebab_case(),
+            Self::Pascal => input.to_pascal_case(),
+            Self::Sentence => input.to_sentence_case(),
+            Self::Snake => input.to_snake_case(),
+        }
+    }
+}
+
 /// Converts the string to various cases.
 pub trait Caseify {
     /// Converts the string to `camelCase`.
