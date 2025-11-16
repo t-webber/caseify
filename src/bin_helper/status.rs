@@ -29,29 +29,36 @@ pub enum Status {
 
 impl Status {
     /// Displays the help message to the screen with a given error message.
-    #[expect(clippy::print_stderr, reason = "goal of the function")]
-    pub fn eprint(self, arg0: &str) {
+    pub fn to_string(&self, arg0: &str) -> String {
         let (red, green, cyan, magenta, nil) = get_colours();
-        let usage =
-            || eprintln!("{magenta}Usage: {arg0} <{green}case{magenta}> [value] [--help]{nil}");
+        let usage = format!("{magenta}Usage: {arg0} <{green}case{magenta}> [value] [--help]{nil}");
 
         match self {
             Self::Error(err) => {
-                eprintln!("{red}Failed to run caseify: {err}{nil}\n");
-                usage();
+                format!("{red}Failed to run {arg0}: {err}{nil}\n\n{usage}")
             }
             Self::Help => {
-                usage();
-                eprintln!("\n{magenta}Omit `value` to read from stdin (e.g. for pipes){nil}\n");
-                eprintln!("Possible {green}case{nil} values:");
-                for (name, example) in Case::HELP {
-                    eprintln!("  {green}{name:<MAX_CASE_NAME_LEN$}{nil}  {example}");
-                }
-                eprintln!("\nExamples");
-                eprintln!("{cyan}$ caseify Camel \"Hello World\"{nil}");
-                eprintln!("# Output: helloWorld");
-                eprintln!("{cyan}$ echo \"hello World\" | caseify Constant{nil}");
-                eprintln!("# Output: HELLO_WORLD");
+                format!(
+                    "\
+{usage}
+{magenta}Omit `value` to read from stdin (e.g. for pipes){nil}
+
+Possible {green}case{nil} values:
+{}
+
+Examples
+{cyan}$ caseify Camel \"Hello World\"{nil}
+# Output: helloWorld
+{cyan}$ echo \"hello World\" | caseify Constant{nil}
+# Output: HELLO_WORLD",
+                    Case::HELP
+                        .iter()
+                        .map(|(name, example)| {
+                            format!("  {green}{name:<MAX_CASE_NAME_LEN$}{nil}  {example}")
+                        })
+                        .collect::<Vec<_>>()
+                        .join("\n")
+                )
             }
         }
     }

@@ -17,19 +17,20 @@ impl Cli {
     pub fn parse<Args: Iterator<Item = String>>(mut args: Args) -> Result<Self, Status> {
         let case = Self::parse_case(args.next())?;
 
-        let value = args.next();
-        if value.as_ref().is_some_and(|val| val == "--help") {
+        let maybe_value = args.next();
+        if maybe_value.as_ref().is_some_and(|val| val == "--help") {
             return Err(Status::Help);
         }
 
-        if args.next().is_some() {
+        if let Some(last) = args.next() {
+            if last == "--help" {
+                return Err(Status::Help);
+            }
             return Err(Status::Error("Too many arguments".to_owned()));
         }
 
-        Ok(Self {
-            case,
-            value: value.as_deref().map(str::to_owned),
-        })
+        let value = maybe_value.as_deref().map(str::to_owned);
+        Ok(Self { case, value })
     }
 
     /// Parses the first argument to check if it is a valid case, an option or erroneous.
@@ -48,14 +49,13 @@ impl Cli {
     ///
     /// This function reads from stdin if no value is provided, or uses the provided value.
     #[expect(clippy::print_stdout, reason = "this is a CLI")]
-    pub fn run(&self) -> Result<(), String> {
+    pub fn run(&self) -> io::Result<()> {
         if let Some(value) = &self.value {
             println!("{}", self.case.caseify(value));
         } else {
             let stdin = io::stdin();
             for line in stdin.lock().lines() {
-                let content = &line.map_err(|err| format!("Io Error: {err}"))?;
-                println!("{}", self.case.caseify(content));
+                println!("{}", self.case.caseify(&line?));
             }
         }
         Ok(())
