@@ -1,5 +1,6 @@
 use std::io::{self, BufRead as _};
 
+use crate::bin_helper::status::Status;
 use crate::parser::case::Case;
 
 /// Options passed through the command line
@@ -13,18 +14,33 @@ pub struct Cli {
 
 impl Cli {
     /// Parses the inputs [`Args`] into a [`Cli`] by checking the validity of the [`Args`].
-    pub fn parse<Args: Iterator<Item = String>>(mut args: Args) -> Result<Self, String> {
-        let Some(case) = args.next() else {
-            return Err("Missing `case` argument".to_owned());
-        };
+    pub fn parse<Args: Iterator<Item = String>>(mut args: Args) -> Result<Self, Status> {
+        let case = Self::parse_case(args.next())?;
 
-        let Some(parsed_case) = Case::maybe_from(&case) else {
-            return Err(format!("{case} isn't a valid case"));
-        };
+        let value = args.next();
+        if value.as_ref().is_some_and(|val| val == "--help") {
+            return Err(Status::Help);
+        }
+
+        if args.next().is_some() {
+            return Err(Status::Error("Too many arguments".to_owned()));
+        }
 
         Ok(Self {
-            case: parsed_case,
-            value: args.next().as_deref().map(str::to_owned),
+            case,
+            value: value.as_deref().map(str::to_owned),
+        })
+    }
+
+    /// Parses the first argument to check if it is a valid case, an option or erroneous.
+    fn parse_case(first: Option<String>) -> Result<Case, Status> {
+        Err(match first {
+            None => Status::Error("Missing `case` argument".to_owned()),
+            Some(arg) if arg == "--help" => Status::Help,
+            Some(arg) => match Case::maybe_from(&arg) {
+                None => Status::Error(format!("{arg} isn't a valid case")),
+                Some(case) => return Ok(case),
+            },
         })
     }
 
@@ -48,7 +64,7 @@ impl Cli {
 
 #[cfg(test)]
 mod tests {
-    use crate::cli::Cli;
+    use super::Cli;
 
     #[expect(clippy::unwrap_used, reason = "tests")]
     fn test(args: &[&str], input: &str, output: &str) {

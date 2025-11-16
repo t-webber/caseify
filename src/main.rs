@@ -30,52 +30,24 @@
     clippy::question_mark_used,
     clippy::single_call_fn,
     clippy::implicit_return,
-    reason = "bad lint"
+    clippy::mod_module_files,
+    reason = "chosen style"
 )]
 
-/// Parses the input arguments
-mod cli;
+/// Module to handle the binary cli
+mod bin_helper;
 /// Parsing logic to perform conversion between cases.
 mod parser;
 use std::env;
 
-use parser::case::Case;
-
-use crate::cli::Cli;
+use crate::bin_helper::cli::Cli;
+use crate::bin_helper::status::Status;
 
 #[expect(clippy::unwrap_used, reason = "argv always has at least 1 element")]
 fn main() {
     let mut args = env::args();
     let program_name = args.next().unwrap();
-    if let Err(msg) = Cli::parse(&mut args).and_then(|cli| cli.run()) {
-        help(&program_name, &msg);
-    }
-}
-
-/// Returns `true` iff the terminal supports ANSI escope codes.
-fn supports_ansi() -> bool {
-    env::var("TERM").is_ok_and(|val| !val.is_empty() && val != "dumb")
-}
-
-/// Returns the ansi escape codes if they are supported.
-fn get_colours() -> (&'static str, &'static str, &'static str, &'static str) {
-    if supports_ansi() {
-        ("\x1b[31m", "\x1b[32m", "\x1b[35m", "\x1b[0m")
-    } else {
-        ("", "", "", "")
-    }
-}
-
-/// Displays the help message to the screen with a given error message.
-#[expect(clippy::print_stderr, reason = "goal of the function")]
-#[expect(clippy::unwrap_used, reason = "there is more than 1 case")]
-fn help(arg0: &str, msg: &str) {
-    let (red, green, magenta, nil) = get_colours();
-    eprintln!("{red}Failed to run casify: {msg}{nil}\n");
-    eprintln!("{magenta}Usage: {arg0} <{green}case{magenta}> [value]{nil}\n");
-    let max_len = Case::HELP.iter().map(|(name, _)| name.len()).max().unwrap();
-    eprintln!("Possible {green}case{nil} values:");
-    for (name, example) in Case::HELP {
-        eprintln!("  {green}{name:<max_len$}{nil}  {example}");
+    if let Err(status) = Cli::parse(&mut args).and_then(|cli| cli.run().map_err(Status::Error)) {
+        status.eprint(&program_name);
     }
 }

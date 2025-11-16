@@ -3,7 +3,7 @@
     clippy::pattern_type_mismatch,
     clippy::missing_inline_in_public_items,
     clippy::mod_module_files,
-    reason = "bad lint"
+    reason = "chosen style"
 )]
 
 /// Defines the [`Case`] struct to list the supported cases.
