@@ -37,7 +37,7 @@ impl Status {
 
         match self {
             Self::Error(err) => {
-                eprintln!("{red}Failed to run casify: {err}{nil}\n");
+                eprintln!("{red}Failed to run caseify: {err}{nil}\n");
                 usage();
             }
             Self::Help => {
